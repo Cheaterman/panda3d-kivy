@@ -3,80 +3,16 @@ import os
 os.environ['KIVY_WINDOW'] = ''  # noqa
 os.environ['KIVY_GL_BACKEND'] = 'gl'  # noqa
 
-from kivy.app import App
-from kivy.base import EventLoop, runTouchApp
+from direct.showbase.DirectObject import DirectObject
+from panda3d.core import MouseWatcher
+from kivy.base import EventLoop
 from kivy.core.window import WindowBase
 from kivy.event import EventDispatcher
 from kivy.graphics import Callback, opengl as gl
-from kivy.lang import Builder
-from kivy.lang import parser
 from kivy.properties import ObjectProperty
-from direct.showbase.DirectObject import DirectObject
-from direct.showbase.ShowBase import ShowBase
-from panda3d.core import MouseWatcher
 
 
-def reset_gl_context():
-    gl.glEnable(gl.GL_BLEND)
-    gl.glDisable(gl.GL_DEPTH_TEST)
-    gl.glDisable(gl.GL_CULL_FACE)
-    gl.glEnable(gl.GL_STENCIL_TEST)
-    gl.glBlendFunc(gl.GL_SRC_ALPHA, gl.GL_ONE_MINUS_SRC_ALPHA)
-    gl.glBlendFuncSeparate(gl.GL_SRC_ALPHA, gl.GL_ONE_MINUS_SRC_ALPHA, gl.GL_ONE, gl.GL_ONE)
-    gl.glActiveTexture(gl.GL_TEXTURE0)
-    gl.glPixelStorei(gl.GL_UNPACK_ALIGNMENT, 1)
-
-
-class PandaApp(ShowBase):
-    def __init__(self, **kwargs):
-        ShowBase.__init__(self, **kwargs)
-
-        display_region = self.win.make_display_region(0, 0.5, 0, 1)
-        display_region.set_sort(30)
-
-        self.kivy_app_1 = kivy_app = MyKivyApp(
-            display_region,
-            panda_app=self,
-        )
-        kivy_app.run()
-
-        display_region = self.win.make_display_region(0.5, 1, 0, 1)
-        display_region.set_sort(30)
-
-        self.kivy_app_2 = kivy_app = MyOtherKivyApp(
-            display_region,
-            panda_app=self,
-        )
-        kivy_app.run()
-
-        scene = self.loader.loadModel('models/environment')
-        scene.reparentTo(self.render)
-        scene.setScale(0.25, 0.25, 0.25)
-
-
-# Everything below is abstracted from user
-class KivyPandaApp(App):
-    def __init__(self, display_region, panda_app, force_redraw=False, **kwargs):
-        super().__init__(**kwargs)
-
-        # XXX: Possible bug with Kivy, should use EventLoop.window instead
-        from kivy.core import window
-
-        self.window = window.Window = KivyWindow(
-            kvlang_text=KV,
-            display_region=display_region,
-            force_redraw=force_redraw,
-            panda_app=panda_app,
-        )
-
-    def run(self):
-        # XXX: Instanciate multiple apps, get the correct one in kvlang
-        parser.global_idmap['app'] = self
-        self._run_prepare()
-        runTouchApp(slave=True)
-
-
-class KivyPandaMouse(DirectObject):
+class PandaMouse(DirectObject):
     mouse_buttons = {1: 'left', 2: 'middle', 3: 'right'}
 
     def __init__(self, panda_app, display_region, on_mouse_event):
@@ -169,13 +105,12 @@ class KivyPandaMouse(DirectObject):
             self.on_mouse_event('wheel', self.coords, direction)
 
 
-class KivyWindow(WindowBase):
+class PandaWindow(WindowBase):
     _clearcolor = ObjectProperty()
 
     modifier_keys = {
         'control': 'ctrl',
         'alt': None,
-        #'shift': None,
         'super': None,
     }
 
@@ -192,17 +127,10 @@ class KivyWindow(WindowBase):
         # XXX: Prevent Kivy Window from being a singleton
         return EventDispatcher.__new__(cls, **kwargs)
 
-    def __init__(
-        self,
-        kvlang_text,
-        display_region,
-        panda_app,
-        force_redraw=False,
-        **kwargs
-    ):
+    def __init__(self, display_region, panda_app, **kwargs):
         self.display_region = display_region
         display_region.set_draw_callback(self.update_kivy)
-        self.mouse = KivyPandaMouse(
+        self.mouse = PandaMouse(
             panda_app=panda_app,
             display_region=display_region,
             on_mouse_event=self.on_mouse_event,
@@ -221,7 +149,7 @@ class KivyWindow(WindowBase):
         super().__init__(**kwargs)
 
         with self.canvas.before:
-            Callback(lambda _: reset_gl_context())
+            Callback(lambda _: self.reset_gl_context())
             Callback(lambda _: gl.glEnableVertexAttribArray(0))
             Callback(lambda _: gl.glEnableVertexAttribArray(1))
 
@@ -229,7 +157,20 @@ class KivyWindow(WindowBase):
             Callback(lambda _: gl.glDisableVertexAttribArray(0))
             Callback(lambda _: gl.glDisableVertexAttribArray(1))
 
-        self.force_redraw = force_redraw
+    def reset_gl_context(self):
+        gl.glEnable(gl.GL_BLEND)
+        gl.glDisable(gl.GL_DEPTH_TEST)
+        gl.glDisable(gl.GL_CULL_FACE)
+        gl.glEnable(gl.GL_STENCIL_TEST)
+        gl.glBlendFunc(gl.GL_SRC_ALPHA, gl.GL_ONE_MINUS_SRC_ALPHA)
+        gl.glBlendFuncSeparate(
+            gl.GL_SRC_ALPHA,
+            gl.GL_ONE_MINUS_SRC_ALPHA,
+            gl.GL_ONE,
+            gl.GL_ONE
+        )
+        gl.glActiveTexture(gl.GL_TEXTURE0)
+        gl.glPixelStorei(gl.GL_UNPACK_ALIGNMENT, 1)
 
     def on_keystroke(self, text):
         key = ord(text)
@@ -425,46 +366,3 @@ BoxLayout:
         on_touch_move: print(app, self.text, args[1].pos, 'move')
         on_touch_up: print(app, self.text, args[1].pos, 'up')
 '''
-
-
-# Instanciating a subclass of kivy.app.App, "as usual"
-class MyKivyApp(KivyPandaApp):
-    def build(self):
-        return Builder.load_string(KV)
-
-
-class MyOtherKivyApp(KivyPandaApp):
-    def build(self):
-        return Builder.load_string('''
-BoxLayout:
-    orientation: 'vertical'
-
-    LabelButton:
-        text: 'BLIBLIBLIBLIBLI'
-        font_size: sp(32)
-        color: 0, 0, 0, 1
-        on_press: print(app, self.text, self.pos, self.size)
-        on_touch_down: print(app, self.text, args[1].pos, 'down')
-        on_touch_move: print(app, self.text, args[1].pos, 'move')
-        on_touch_up: print(app, self.text, args[1].pos, 'up')
-
-    TextInput:
-        hint_text: 'Tagada pwet!'
-        #cursor_color: 0, 1, 1, 1
-        #cursor_width: dp(12)
-
-        canvas.after:
-            Color:
-                rgba:
-                    (self.cursor_color
-                    if self.focus and not self._cursor_blink
-                    else (0, 0, 0, 0))
-            Rectangle:
-                pos: self._cursor_visual_pos[0], self._cursor_visual_pos[1] - self._cursor_visual_height
-                size: self.cursor_width, self._cursor_visual_height
-
-<LabelButton@ButtonBehavior+Label>:
-''')
-
-
-PandaApp().run()
