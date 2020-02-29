@@ -346,23 +346,3 @@ class PandaWindow(WindowBase):
             for wh, offset in zip(self.size, self.offsets)
         ]
         return tuple(xy - offset for xy, offset in zip((x, y), offsets))
-
-
-# This part is what the user cares about
-KV = '''
-BoxLayout:
-    orientation: 'vertical'
-    opacity: .75
-
-    TextInput:
-        hint_text: 'Hello, world!'
-        cursor_color: 0, 1, 1, 1
-        cursor_width: dp(12)
-
-    Button:
-        text: 'Owi'
-        on_press: print(app, self.text, self.pos, self.size)
-        on_touch_down: print(app, self.text, args[1].pos, 'down')
-        on_touch_move: print(app, self.text, args[1].pos, 'move')
-        on_touch_up: print(app, self.text, args[1].pos, 'up')
-'''
