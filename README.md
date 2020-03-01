@@ -29,10 +29,10 @@ class Example(App):
         return Button(text='Hello, world!')
 ```
 
-You can then instanciate and run this app inside the `__init__` of your Panda
+You can then instantiate and run this app inside the `__init__` of your Panda
 `ShowBase`, after running `ShowBase.__init__(self)`. You will need to create a
 display region for your kivy app, sized according to your needs. You must then
-pass it as well as your showbase as arguments to the kivy app instanciation,
+pass it as well as your ShowBase as arguments to the Kivy app instantiation,
 and finally call `app.run()` as you normally would:
 
 ```python
