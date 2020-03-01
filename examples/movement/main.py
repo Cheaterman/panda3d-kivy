@@ -12,6 +12,9 @@ from panda3d_kivy.app import App
 from kivy.properties import DictProperty
 
 
+PANDA_SPEED_MULTIPLIER = 3
+
+
 class MovementApp(ShowBase):
     def __init__(self):
         ShowBase.__init__(self)
@@ -95,12 +98,12 @@ class PandaCharacter:
             actor.loop('walk', restart=False)
 
         if 'forward' in self.actions:
-            actor.set_play_rate(1, 'walk')
-            y_offset += dt * 200
+            actor.set_play_rate(1 * PANDA_SPEED_MULTIPLIER, 'walk')
+            y_offset += dt * 200 * PANDA_SPEED_MULTIPLIER
 
         if 'backward' in self.actions:
-            actor.set_play_rate(-.75, 'walk')
-            y_offset -= dt * 150
+            actor.set_play_rate(-.75 * PANDA_SPEED_MULTIPLIER, 'walk')
+            y_offset -= dt * 150 * PANDA_SPEED_MULTIPLIER
 
         if 'turn_left' in self.actions:
             angle_offset += dt * 50
