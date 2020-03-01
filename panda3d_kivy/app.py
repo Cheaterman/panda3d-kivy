@@ -7,8 +7,11 @@ from kivy.lang import parser
 
 
 class App(KivyApp):
-    def __init__(self, display_region, panda_app, **kwargs):
+    def __init__(self, panda_app, display_region=None, **kwargs):
         super().__init__(**kwargs)
+
+        if display_region is None:
+            display_region = panda_app.win.make_display_region(0, 1, 0, 1)
 
         self.window = PandaWindow(
             display_region=display_region,
