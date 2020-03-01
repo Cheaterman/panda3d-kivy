@@ -1,0 +1,30 @@
+FloatLayout:
+    GridLayout:
+        cols: 3
+        pos_hint: {'center_x': .5}
+        size_hint: .3, .3
+
+        Widget:
+
+        StyledButton:
+            text: '↑'
+            on_state: app.button_states['up'] = self.state == 'down'
+
+        Widget:
+
+
+        StyledButton:
+            text: '←'
+            on_state: app.button_states['left'] = self.state == 'down'
+
+        StyledButton:
+            text: '↓'
+            on_state: app.button_states['down'] = self.state == 'down'
+
+        StyledButton:
+            text: '→'
+            on_state: app.button_states['right'] = self.state == 'down'
+
+
+<StyledButton@Button>:
+    font_size: sp(32)
