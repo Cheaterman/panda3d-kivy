@@ -20,18 +20,6 @@ class PandaMouse(DirectObject):
         panda_app.mouseWatcherNode.get_parent(0).addChild(mouse_watcher)
         self.display_region = display_region
         mouse_watcher.set_display_region(display_region)
-        self.dimensions = dimensions = display_region.get_dimensions()
-        relative_size = [
-            dimensions[wh + 1] - dimensions[wh]
-            for wh in range(0, 3, 2)
-        ]
-        self.window_size = [
-            display_region_wh / relative_wh
-            for display_region_wh, relative_wh in zip(
-                display_region.get_pixel_size(),
-                relative_size,
-            )
-        ]
 
         self.coords = (0, 0)
         self.buttons_down = set()
@@ -49,7 +37,22 @@ class PandaMouse(DirectObject):
         self.accept('wheel_up', handle_event, ['wheel', 'up'])
         self.accept('wheel_down', handle_event, ['wheel', 'down'])
 
+    def update_dimensions(self):
+        self.dimensions = dimensions = self.display_region.get_dimensions()
+        relative_size = [
+            dimensions[wh + 1] - dimensions[wh]
+            for wh in range(0, 3, 2)
+        ]
+        self.window_size = [
+            display_region_wh / relative_wh
+            for display_region_wh, relative_wh in zip(
+                self.display_region.get_pixel_size(),
+                relative_size,
+            )
+        ]
+
     def update_position(self):
+        self.update_dimensions()
         mouse_watcher = self.mouse_watcher
 
         if not mouse_watcher.has_mouse():
