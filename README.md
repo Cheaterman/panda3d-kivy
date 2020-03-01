@@ -30,10 +30,12 @@ class Example(App):
 ```
 
 You can then instantiate and run this app inside the `__init__` of your Panda
-`ShowBase`, after running `ShowBase.__init__(self)`. You will need to create a
-display region for your kivy app, sized according to your needs. You must then
-pass it as well as your ShowBase as arguments to the Kivy app instantiation,
-and finally call `app.run()` as you normally would:
+`ShowBase`, after running `ShowBase.__init__(self)`. You may want to create a
+display region for your kivy app, sized according to your needs, otherwise
+`panda3d_kivy` will automatically create one for you that will occupy the
+entire window. You must then pass your ShowBase as argument to the Kivy app
+instantiation, as well as your display region if applicable, and finally call
+`app.run()` as you normally would:
 
 ```python
 from direct.showbase.ShowBase import ShowBase
@@ -42,13 +44,7 @@ class PandaApp(ShowBase):
     def __init__(self):
         ShowBase.__init__(self)
 
-        # Full screen display region, adjust as needed
-        display_region = self.win.make_display_region(0, 1, 0, 1)
-
-        self.kivy_app = kivy_app = Example(
-            display_region,
-            panda_app=self,
-        )
+        self.kivy_app = kivy_app = Example(self)
         kivy_app.run()
 
         # The rest of your ShowBase code here
