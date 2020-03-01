@@ -18,7 +18,7 @@ class App(KivyApp):
     def run(self):
         self.load_config()
 
-        # XXX: Instanciate multiple apps, get the correct one in kvlang
+        # XXX: Instantiate multiple apps, get the correct one in kvlang
         parser.global_idmap['app'] = self
         self.load_kv(filename=self.kv_file)
 
