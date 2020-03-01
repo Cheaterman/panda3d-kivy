@@ -7,11 +7,10 @@ from kivy.properties import NumericProperty, StringProperty
 
 
 class PandaApp(ShowBase):
-    def __init__(self, **kwargs):
-        ShowBase.__init__(self, **kwargs)
+    def __init__(self):
+        ShowBase.__init__(self)
 
         display_region = self.win.make_display_region(0, 0.25, 0, 1)
-        display_region.set_sort(30)
 
         self.kivy_app_1 = kivy_app = MyKivyApp(
             display_region,

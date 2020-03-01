@@ -13,13 +13,12 @@ from kivy.properties import DictProperty
 
 
 class MovementApp(ShowBase):
-    def __init__(self, **kwargs):
-        ShowBase.__init__(self, **kwargs)
+    def __init__(self):
+        ShowBase.__init__(self)
 
         self.disable_mouse()
 
         display_region = self.win.make_display_region(0, 1, 0, 1)
-        display_region.set_sort(30)
 
         self.movement_ui = movement_ui = MovementUI(
             display_region,
