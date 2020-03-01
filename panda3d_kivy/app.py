@@ -10,16 +10,21 @@ class App(KivyApp):
     def __init__(self, display_region, panda_app, **kwargs):
         super().__init__(**kwargs)
 
-        # XXX: Possible bug with Kivy, should use EventLoop.window instead
-        from kivy.core import window
-
-        self.window = window.Window = PandaWindow(
+        self.window = PandaWindow(
             display_region=display_region,
             panda_app=panda_app,
         )
 
     def run(self):
+        self.load_config()
+
         # XXX: Instanciate multiple apps, get the correct one in kvlang
         parser.global_idmap['app'] = self
-        self._run_prepare()
-        runTouchApp(slave=True)
+        self.load_kv(filename=self.kv_file)
+
+        root = self.build()
+
+        if root:
+            self.root = root
+
+        runTouchApp(self.root, slave=True)

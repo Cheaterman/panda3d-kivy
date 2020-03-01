@@ -1,7 +1,6 @@
-import os
+from panda3d_kivy import monkey
 
-os.environ['KIVY_WINDOW'] = ''  # noqa
-os.environ['KIVY_GL_BACKEND'] = 'gl'  # noqa
+monkey.patch_kivy()  # noqa
 
 from direct.showbase.DirectObject import DirectObject
 from panda3d.core import MouseWatcher
