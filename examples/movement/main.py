@@ -21,10 +21,7 @@ class MovementApp(ShowBase):
 
         self.disable_mouse()
 
-        self.movement_ui = movement_ui = MovementUI(
-            display_region=None,
-            panda_app=self,
-        )
+        self.movement_ui = movement_ui = MovementUI(self)
         movement_ui.run()
 
         scene = self.loader.load_model('models/environment')

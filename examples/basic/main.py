@@ -13,8 +13,8 @@ class PandaApp(ShowBase):
         display_region = self.win.make_display_region(0, 0.25, 0, 1)
 
         self.kivy_app_1 = kivy_app = MyKivyApp(
-            display_region,
-            panda_app=self,
+            self,
+            display_region
         )
         kivy_app.run()
 
@@ -22,8 +22,8 @@ class PandaApp(ShowBase):
         display_region.set_sort(30)
 
         self.kivy_app_2 = kivy_app = MyOtherKivyApp(
-            display_region,
-            panda_app=self,
+            self,
+            display_region
         )
         kivy_app.run()
 
