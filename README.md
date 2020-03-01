@@ -14,12 +14,14 @@ Usage:
 First, import `panda3d_kivy.app.App` - make sure you do this before importing
 any Kivy-related stuff:
 
-```from panda3d_kivy.app import App```
+```python
+from panda3d_kivy.app import App
+```
 
 Then, as usual in Kivy, create a subclass of this App, and use build() or the
 KV autoloading system to populate your widget tree:
 
-```
+```python
 from kivy.uix.button import Button
 
 class Example(App):
@@ -33,7 +35,7 @@ display region for your kivy app, sized according to your needs. You must then
 pass it as well as your showbase as arguments to the kivy app instanciation,
 and finally call `app.run()` as you normally would:
 
-```
+```python
 from direct.showbase.ShowBase import ShowBase
 
 class PandaApp(ShowBase):
