@@ -33,6 +33,7 @@ class App(KivyApp):
         self.window = PandaWindow(
             display_region=display_region,
             panda_app=panda_app,
+            kivy_app=self,
         )
 
         if not self.root:

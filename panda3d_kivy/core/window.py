@@ -2,6 +2,8 @@ from panda3d_kivy import monkey
 
 monkey.patch_kivy()  # noqa
 
+from kivy.app import App
+from kivy.core import window
 from direct.showbase.DirectObject import DirectObject
 from panda3d.core import MouseWatcher
 from kivy.base import EventLoop
@@ -129,7 +131,7 @@ class PandaWindow(WindowBase):
         # XXX: Prevent Kivy Window from being a singleton
         return EventDispatcher.__new__(cls, **kwargs)
 
-    def __init__(self, display_region, panda_app, **kwargs):
+    def __init__(self, display_region, panda_app, kivy_app, **kwargs):
         self.display_region = display_region
         panda_app.taskMgr.add(
             lambda _: display_region.set_draw_callback(self.update_kivy)
@@ -161,6 +163,8 @@ class PandaWindow(WindowBase):
         with self.canvas.after:
             Callback(lambda _: gl.glDisableVertexAttribArray(0))
             Callback(lambda _: gl.glDisableVertexAttribArray(1))
+
+        self.kivy_app = kivy_app
 
     def reset_gl_context(self):
         gl.glEnable(gl.GL_BLEND)
@@ -244,10 +248,15 @@ class PandaWindow(WindowBase):
 
         self.modifiers.remove(target_modifier)
 
+    def setup_kivy_variables(self):
+        window.Window = self
+        App._running_app = self.kivy_app
+
     def update_kivy(self, *args):
         self.update_size()
         self.mouse.update_position()
         self._has_updated = self._has_drawn = False
+        self.setup_kivy_variables()
         EventLoop.idle()
         self._has_updated = True
         self.on_draw()
@@ -330,6 +339,7 @@ class PandaWindow(WindowBase):
 
         motion_event.sx, motion_event.sy = coords
 
+        self.setup_kivy_variables()
         super().on_motion(event_type, motion_event)
 
     def to_local(self, x, y):
