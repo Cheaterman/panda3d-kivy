@@ -131,7 +131,10 @@ class PandaWindow(WindowBase):
 
     def __init__(self, display_region, panda_app, **kwargs):
         self.display_region = display_region
-        display_region.set_draw_callback(self.update_kivy)
+        panda_app.taskMgr.add(
+            lambda _: display_region.set_draw_callback(self.update_kivy)
+        )
+
         self.mouse = PandaMouse(
             panda_app=panda_app,
             display_region=display_region,
