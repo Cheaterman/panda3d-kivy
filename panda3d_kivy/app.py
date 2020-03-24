@@ -49,6 +49,7 @@ class App(KivyApp):
         parser.global_idmap['app'] = self
         self.load_kv(filename=self.kv_file)
 
+        self.window.setup_kivy_variables()
         root = self.build()
 
         if root:
