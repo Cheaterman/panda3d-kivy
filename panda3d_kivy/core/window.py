@@ -100,7 +100,10 @@ class PandaMouse(DirectObject):
             if state == 'down':
                 self.buttons_down.add(button)
             else:
-                self.buttons_down.remove(button)
+                try:
+                    self.buttons_down.remove(button)
+                except:
+                    print(button,"was never down")
 
             self.on_mouse_event(state, self.coords, button)
 
