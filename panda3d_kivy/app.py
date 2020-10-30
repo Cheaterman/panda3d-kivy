@@ -1,6 +1,9 @@
 # XXX: Make sure to import panda3d_kivy BEFORE anything Kivy-related
 from panda3d_kivy.core.window import PandaWindow
 
+# Sets kivy.exit_on_escape to 0 (a more sensible default for Panda3D apps)
+import panda3d_kivy.config  # noqa
+
 from kivy.app import App as KivyApp
 from kivy.base import runTouchApp
 from kivy.lang import parser
