@@ -205,7 +205,7 @@ class PandaWindow(WindowBase):
         if '-' not in text:
             return
 
-        modifier, text = text.split('-')
+        modifier, _, text = text.partition('-')
 
         if modifier not in self.modifier_keys:
             return
