@@ -4,6 +4,7 @@ from panda3d_kivy.core.window import PandaWindow
 # Sets kivy.exit_on_escape to 0 (a more sensible default for Panda3D apps)
 import panda3d_kivy.config  # noqa
 
+import kivy
 from kivy.app import App as KivyApp
 from kivy.base import runTouchApp
 from kivy.lang import parser
@@ -58,4 +59,14 @@ class App(KivyApp):
         if root:
             self.root = root
 
-        runTouchApp(self.root, slave=True)
+        # See https://github.com/kivy/kivy/pull/6937
+        kwargs = {}
+        version, *_ = kivy.parse_kivy_version(kivy.version.__version__)
+        major, *_ = version
+
+        if major < 2:
+            kwargs['slave'] = True
+        else:
+            kwargs['embedded'] = True
+
+        runTouchApp(self.root, **kwargs)
