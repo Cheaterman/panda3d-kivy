@@ -61,7 +61,7 @@ class App(KivyApp):
 
         # See https://github.com/kivy/kivy/pull/6937
         kwargs = {}
-        version, *_ = kivy.parse_kivy_version(kivy.version.__version__)
+        version, *_ = kivy.parse_kivy_version(kivy.__version__)
         major, *_ = version
 
         if major < 2:
