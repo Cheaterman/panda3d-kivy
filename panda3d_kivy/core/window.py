@@ -16,11 +16,18 @@ from kivy.properties import ObjectProperty
 class PandaMouse(DirectObject):
     mouse_buttons = {1: 'left', 2: 'middle', 3: 'right'}
 
-    def __init__(self, panda_app, display_region, on_mouse_event):
+    def __init__(
+        self,
+        panda_app,
+        panda_window,
+        display_region,
+        on_mouse_event,
+    ):
         self.mouse_watcher = mouse_watcher = MouseWatcher()
         panda_app.mouseWatcherNode.get_parent(0).addChild(mouse_watcher)
         self.display_region = display_region
         mouse_watcher.set_display_region(display_region)
+        self.panda_window = panda_window
 
         self.coords = (0, 0)
         self.buttons_down = set()
@@ -59,6 +66,10 @@ class PandaMouse(DirectObject):
         if not mouse_watcher.has_mouse():
             return
 
+        # Important! Kivy might be very confused otherwise, looking for
+        # system_size on the wrong Window instance...
+        EventLoop.window = self.panda_window
+
         old_coords = self.coords
         dimensions = self.dimensions
 
@@ -72,7 +83,7 @@ class PandaMouse(DirectObject):
         ]
 
         # Invert Y axis
-        normalized_coords[1] = 1 - normalized_coords[1]
+        normalized_coords[1] = self.dimensions[3] - normalized_coords[1]
 
         # Get absolute coords relative to window
         self.coords = [
@@ -139,6 +150,7 @@ class PandaWindow(WindowBase):
 
         self.mouse = PandaMouse(
             panda_app=panda_app,
+            panda_window=self,
             display_region=display_region,
             on_mouse_event=self.on_mouse_event,
         )
@@ -326,9 +338,10 @@ class PandaWindow(WindowBase):
             self.ignored_touches.remove(motion_event)
             return
 
-        coords = [
-            coord - offset for coord, offset in zip(coords, self.offsets)
-        ]
+        if event_type != 'end':
+            coords = [
+                coord - offset for coord, offset in zip(coords, self.offsets)
+            ]
 
         if any(
             not 0 <= coord <= 1
