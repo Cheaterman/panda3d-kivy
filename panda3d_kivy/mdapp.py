@@ -4,14 +4,18 @@ from panda3d_kivy.core.window import PandaWindow
 # Sets kivy.exit_on_escape to 0 (a more sensible default for Panda3D apps)
 import panda3d_kivy.config  # noqa
 
+import os
 import kivy
 from kivy.app import App as KivyApp
 from kivy.base import runTouchApp
-from kivy.lang import parser
+from kivy.lang import parser, Builder
+from kivy.properties import ObjectProperty
 
 
-class App(KivyApp):
-    def __init__(self, panda_app, display_region=None, **kwargs):
+class MDApp(KivyApp):
+    theme_cls = ObjectProperty()
+
+    def __init__(self, panda_app, display_region, **kwargs):
         super().__init__(**kwargs)
 
         if display_region is None:
@@ -43,6 +47,29 @@ class App(KivyApp):
         if not self.root:
             self.run()  # root shouldn't be set before run() is called
 
+
+    def load_all_kv_files(self, path_to_directory: str) -> None:
+        """
+        Recursively loads KV files from the selected directory.
+        .. versionadded:: 1.0.0
+        """
+
+        for path_to_dir, dirs, files in os.walk(path_to_directory):
+            if (
+                "venv" in path_to_dir
+                or ".buildozer" in path_to_dir
+                or "kivymd/tools/patterns/MVC" in path_to_dir
+            ):
+                continue
+            for name_file in files:
+                if (
+                    os.path.splitext(name_file)[1] == ".kv"
+                    and name_file != "style.kv"  # if use PyInstaller
+                    and "__MACOS" not in path_to_dir  # if use Mac OS
+                ):
+                    path_to_kv_file = os.path.join(path_to_dir, name_file)
+                    Builder.load_file(path_to_kv_file)
+
     def run(self):
         if not self.window:
             return  # run() will be called from init_window()
@@ -54,6 +81,10 @@ class App(KivyApp):
         self.load_kv(filename=self.kv_file)
 
         self.window.setup_kivy_variables()
+
+        from kivymd.theming import ThemeManager
+        self.theme_cls = ThemeManager()
+
         root = self.build()
 
         if root:

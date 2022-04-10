@@ -10,7 +10,7 @@ setuptools.setup(
     description='Panda3D add-on for Kivy integration.',
     long_description=pathlib.Path('README.md').read_text(),
     long_description_content_type='text/markdown',
-    url='https://github.com/Cheaterman/panda3d-kivy',
+    url='https://github.com/yuehaowang/panda3d-kivy',
     packages=setuptools.find_packages(),
     classifiers=[
         'Programming Language :: Python :: 3',
