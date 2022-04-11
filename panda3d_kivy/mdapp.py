@@ -34,9 +34,11 @@ class MDApp(KivyApp):
         display_region = self.display_region
         panda_app = self.panda_app
         del self.display_region
-        del self.panda_app
 
-        panda_app.taskMgr.add(lambda _: display_region.clear_draw_callback())
+        panda_app.taskMgr.add(
+            lambda _: display_region.clear_draw_callback(),
+            name='panda3d_kivy_display_region_clear_draw_callback')
+
 
         self.window = PandaWindow(
             display_region=display_region,
@@ -103,3 +105,12 @@ class MDApp(KivyApp):
         self.on_start()
 
         runTouchApp(self.root, **kwargs)
+
+    def stop(self):
+        super().stop()
+        if self.window is not None:
+            self.window.remove_widget(self.root)
+            del self.root
+            self.window.destroy()
+            self.window = None
+        self.panda_app.taskMgr.remove('panda3d_kivy_display_region_clear_draw_callback')
