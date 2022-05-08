@@ -23,6 +23,7 @@ class PandaMouse(DirectObject):
         display_region,
         on_mouse_event,
     ):
+        self.panda_app = panda_app
         self.mouse_watcher = mouse_watcher = MouseWatcher()
         panda_app.mouseWatcherNode.get_parent(0).addChild(mouse_watcher)
         self.display_region = display_region
@@ -44,6 +45,11 @@ class PandaMouse(DirectObject):
         self.accept('mouse3-up', handle_event, ['mouse3', 'up'])
         self.accept('wheel_up', handle_event, ['wheel', 'up'])
         self.accept('wheel_down', handle_event, ['wheel', 'down'])
+
+    def destroy(self):
+        self.ignoreAll()
+        self.mouse_watcher.clearDisplayRegion()
+        self.panda_app.mouseWatcherNode.get_parent(0).removeChild(self.mouse_watcher)
 
     def update_dimensions(self):
         self.dimensions = dimensions = self.display_region.get_dimensions()
@@ -144,8 +150,10 @@ class PandaWindow(WindowBase):
 
     def __init__(self, display_region, panda_app, kivy_app, **kwargs):
         self.display_region = display_region
+        self.panda_app = panda_app
         panda_app.taskMgr.add(
-            lambda _: display_region.set_draw_callback(self.update_kivy)
+            lambda _: display_region.set_draw_callback(self.update_kivy),
+            name='panda3d_kivy_display_region_set_draw_callback'
         )
 
         self.mouse = PandaMouse(
@@ -177,6 +185,10 @@ class PandaWindow(WindowBase):
             Callback(lambda _: gl.glDisableVertexAttribArray(1))
 
         self.kivy_app = kivy_app
+    
+    def destroy(self):
+        self.mouse.destroy()
+        self.panda_app.taskMgr.remove('panda3d_kivy_display_region_set_draw_callback')
 
     def reset_gl_context(self):
         gl.glEnable(gl.GL_BLEND)

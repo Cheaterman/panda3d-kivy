@@ -4,13 +4,13 @@ import setuptools
 
 setuptools.setup(
     name='panda3d-kivy',
-    version='0.3.0',
+    version='0.3.1',
     author='Cheaterman',
     author_email='the.cheaterman@gmail.com',
     description='Panda3D add-on for Kivy integration.',
     long_description=pathlib.Path('README.md').read_text(),
     long_description_content_type='text/markdown',
-    url='https://github.com/Cheaterman/panda3d-kivy',
+    url='https://github.com/yuehaowang/panda3d-kivy',
     packages=setuptools.find_packages(),
     classifiers=[
         'Programming Language :: Python :: 3',
