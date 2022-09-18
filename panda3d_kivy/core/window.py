@@ -10,7 +10,6 @@ from kivy.base import EventLoop
 from kivy.core.window import WindowBase
 from kivy.event import EventDispatcher
 from kivy.graphics import Callback, opengl as gl
-from kivy.properties import ObjectProperty
 
 
 class PandaMouse(DirectObject):
@@ -121,8 +120,6 @@ class PandaMouse(DirectObject):
 
 
 class PandaWindow(WindowBase):
-    _clearcolor = ObjectProperty()
-
     modifier_keys = {
         'control': 'ctrl',
         'alt': None,
@@ -177,6 +174,10 @@ class PandaWindow(WindowBase):
             Callback(lambda _: gl.glDisableVertexAttribArray(1))
 
         self.kivy_app = kivy_app
+
+    def clear(self):
+        # Let Panda3D handle clearing the window
+        pass
 
     def reset_gl_context(self):
         gl.glEnable(gl.GL_BLEND)
