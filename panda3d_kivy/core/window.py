@@ -10,6 +10,7 @@ from kivy.base import EventLoop
 from kivy.core.window import WindowBase
 from kivy.event import EventDispatcher
 from kivy.graphics import Callback, opengl as gl
+from kivy.properties import AliasProperty
 
 
 class PandaMouse(DirectObject):
@@ -281,6 +282,23 @@ class PandaWindow(WindowBase):
             dimensions[2*i] / (dimensions[2*i + 1] - dimensions[2*i])
             for i in range(2)
         ]
+
+    def _get_size(self):
+        r = self._rotation
+        w, h = self._size
+
+        if self.softinput_mode == 'resize':
+            h -= self.keyboard_height
+
+        if r in (0, 180):
+            return w, h
+
+        return h, w
+
+    def _set_size(self, size):
+        return super()._set_size(size)
+
+    size = AliasProperty(_get_size, _set_size, bind=('_size', '_rotation'))
 
     def on_draw(self):
         if self._has_updated and not self._has_drawn:
