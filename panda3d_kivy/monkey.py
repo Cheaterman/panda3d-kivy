@@ -6,7 +6,7 @@ import kivy.core
 
 def patch_kivy():
     os.environ['KIVY_WINDOW'] = ''
-    if sys.platform == 'linux':
+    if sys.platform in ('linux', 'darwin'):
         os.environ['KIVY_GL_BACKEND'] = 'gl'
 
     orig_core_select_lib = kivy.core.core_select_lib
