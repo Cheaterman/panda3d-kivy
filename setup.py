@@ -4,7 +4,7 @@ import setuptools
 
 setuptools.setup(
     name='panda3d-kivy',
-    version='0.5.0',
+    version='0.5.1',
     author='Cheaterman',
     author_email='the.cheaterman@gmail.com',
     description='Panda3D add-on for Kivy integration.',
