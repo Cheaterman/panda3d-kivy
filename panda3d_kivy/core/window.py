@@ -283,23 +283,6 @@ class PandaWindow(WindowBase):
             for i in range(2)
         ]
 
-    def _get_size(self):
-        r = self._rotation
-        w, h = self._size
-
-        if self.softinput_mode == 'resize':
-            h -= self.keyboard_height
-
-        if r in (0, 180):
-            return w, h
-
-        return h, w
-
-    def _set_size(self, size):
-        return super()._set_size(size)
-
-    size = AliasProperty(_get_size, _set_size, bind=('_size', '_rotation'))
-
     def on_draw(self):
         if self._has_updated and not self._has_drawn:
             super().on_draw()
@@ -393,3 +376,47 @@ class PandaWindow(WindowBase):
             for wh, offset in zip(self.size, self.offsets)
         ]
         return tuple(xy - offset for xy, offset in zip((x, y), offsets))
+
+    # Patching all this for Kivy >= 2.2.0 on Windows - no _win attribute
+    def _get_size(self):
+        r = self._rotation
+        w, h = self._size
+
+        if self.softinput_mode == 'resize':
+            h -= self.keyboard_height
+
+        if r in (0, 180):
+            return w, h
+
+        return h, w
+
+    def _set_size(self, size):
+        return super()._set_size(size)
+
+    size = AliasProperty(_get_size, _set_size, bind=('_size', '_rotation'))
+
+    def _get_width(self):
+        r = self._rotation
+        _size = self._size
+
+        if r in (0, 180):
+            return _size[0]
+
+        return _size[1]
+
+    width = AliasProperty(_get_width, bind=('_rotation', '_size', '_density'))
+
+    def _get_height(self):
+        r = self._rotation
+        _size = self._size
+        kb = self.keyboard_height if self.softinput_mode == 'resize' else 0
+
+        if r in (0, 180):
+            return _size[1] - kb
+
+        return _size[0] - kb
+
+    height = AliasProperty(
+        _get_height,
+        bind=('_rotation', '_size', '_density')
+    )
