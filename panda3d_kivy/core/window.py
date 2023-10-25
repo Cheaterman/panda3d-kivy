@@ -91,10 +91,16 @@ class PandaMouse(DirectObject):
             for coord, wh in zip(normalized_coords, self.window_size)
         ]
 
-        if(
-            self.buttons_down
-            and self.coords != old_coords
-        ):
+        if self.coords == old_coords:
+            return
+
+        # I guess WindowBase inverts Y again - on_touch_move is OK
+        self.panda_window.mouse_pos = (
+            self.coords[0],
+            self.window_size[1] - self.coords[1],
+        )
+
+        if self.buttons_down:
             self.on_mouse_event('move', self.coords)
 
     def handle_event(self, button, state_or_direction):
@@ -175,6 +181,7 @@ class PandaWindow(WindowBase):
             Callback(lambda _: gl.glDisableVertexAttribArray(1))
 
         self.kivy_app = kivy_app
+        self.update_size()
 
     def clear(self):
         # Let Panda3D handle clearing the window
