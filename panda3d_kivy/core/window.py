@@ -4,6 +4,7 @@ monkey.patch_kivy()  # noqa
 
 from kivy.app import App
 from kivy.core import window
+from kivy.uix import dropdown
 from kivy.uix import textinput
 from direct.showbase.DirectObject import DirectObject
 from panda3d.core import MouseWatcher
@@ -272,6 +273,7 @@ class PandaWindow(WindowBase):
 
     def setup_kivy_variables(self):
         window.Window = self
+        dropdown.Window = self
         textinput.Window = self
         App._running_app = self.kivy_app
 
